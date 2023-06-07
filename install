@@ -1,0 +1,23 @@
+#! /bin/bash
+
+# Based on .github/workflows/package-ubuntu.yml
+
+set -ex
+
+# For some reason, packages are not updated properly
+
+rm -rf .local/share/haxe/lib/*
+
+haxe -version
+haxe setup.hxml
+haxelib list
+
+pushd app/
+
+rm -rf redist/*
+npm install
+npm run pack-linux-x86
+sudo rsync -rac redist/linux-unpacked/ --info=progress2 /usr/share/ldtk 
+sudo ln -snf /usr/share/ldtk/ldtk /usr/bin/ldtk
+
+popd
